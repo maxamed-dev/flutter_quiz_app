@@ -1,4 +1,4 @@
-# adv_basic
+# Cross Platform Quiz App on Flutter
 
 A new Flutter project.
 
