@@ -47,7 +47,7 @@ class StarterScreen extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.indigo.shade300,
               ),
-              icon: Icon(Icons.play_arrow),
+              icon: const Icon(Icons.play_arrow),
             ),
           ),
         ],

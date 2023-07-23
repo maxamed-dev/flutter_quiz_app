@@ -28,9 +28,15 @@ class _QuizState extends State<Quiz> {
       if (answeredQuestions.length == questions.length) {
         setState(() {
           activeScreen = 'result-screen';
-          //answeredQuestions.clear();
         });
       }
+    });
+  }
+
+  void resetQuiz() {
+    setState(() {
+      answeredQuestions = <String>[];
+      activeScreen = 'start-screen';
     });
   }
 
@@ -61,7 +67,9 @@ class _QuizState extends State<Quiz> {
                       onChosenAnswer: chosenAnswer,
                     )
                   : ResultScreen(
-                      answeredQuestions: answeredQuestions,
+                      answeredQuestions:
+                          answeredQuestions, //changed from const <String>[]
+                      onRestartQuiz: resetQuiz,
                     ),
         ),
       ),

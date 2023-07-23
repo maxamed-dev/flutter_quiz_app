@@ -6,9 +6,11 @@ class ResultScreen extends StatelessWidget {
   ResultScreen({
     Key? key,
     required this.answeredQuestions,
+    required this.onRestartQuiz,
   }) : super(key: key);
 
   final List<String> answeredQuestions;
+  final void Function() onRestartQuiz;
 
   List<Map<String, Object>> getResults() {
     final summaryResult = <Map<String, Object>>[];
@@ -17,7 +19,8 @@ class ResultScreen extends StatelessWidget {
       summaryResult.add({
         'question_index': i,
         'question': questions[i].text,
-        'correct_answer': questions[0],
+        //First element is always the correct answer
+        'correct_answer': questions[i].answers[0],
         'chosen_answer': answeredQuestions[i],
       });
     }
@@ -27,6 +30,12 @@ class ResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final summaryData = getResults();
+    final numberOfCorrectAnswers = summaryData.where((entry) {
+      return entry['chosen_answer'] == entry['correct_answer'];
+    }).length;
+    final numberOfTotalQuestions = answeredQuestions.length;
+
     return Container(
       child: Center(
         child: Column(
@@ -34,25 +43,55 @@ class ResultScreen extends StatelessWidget {
               MainAxisAlignment.center, // Center items on the vertical axis
           children: [
             // Text that states how many questions were answered correctly
-            const Text(
-              'You answered 0 out of 0 questions correctly!',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+            Container(
+              margin: EdgeInsets.only(
+                bottom: MediaQuery.of(context).size.height *
+                    0.05, // Top margin 5% of total height
               ),
-              textAlign: TextAlign.center,
+              child: Container(
+                margin: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width * 0.1, //
+                ),
+                child: Text(
+                  'You answered $numberOfCorrectAnswers out of $numberOfTotalQuestions questions correctly!',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.left,
+                ),
+              ),
             ),
-            // list of answers and questions
-
-            //Button to restart the quiz
-            ElevatedButton.icon(
-              onPressed: () {},
-              label: const Text('Restart Quiz'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.indigo.shade300,
+            // list of answers and questions similar to below:
+            Container(
+              // take the same amount of margin from the left and right
+              margin: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.1, //
               ),
-              icon: const Icon(Icons.replay),
+              child: QuizSummary(
+                summaryData: summaryData,
+              ),
+            ),
+            //Button to restart the quiz
+            Container(
+              width: MediaQuery.of(context).size.width * 0.85,
+              height: MediaQuery.of(context).size.width * 0.1,
+              margin: EdgeInsets.only(
+                top: MediaQuery.of(context).size.height *
+                    0.05, // Top margin 5% of total height
+              ),
+              child: ElevatedButton.icon(
+                //When we press this button we want to go back to the start screen
+                onPressed: () {
+                  onRestartQuiz();
+                },
+                label: const Text('Restart Quiz'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.indigo.shade300,
+                ),
+                icon: const Icon(Icons.replay),
+              ),
             ),
           ],
         ),
@@ -60,42 +99,3 @@ class ResultScreen extends StatelessWidget {
     );
   }
 }
-
-//This is the questionsscreen
-/*     return Container(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              margin: EdgeInsets.only(
-                bottom: MediaQuery.of(context).size.height *
-                    0.025, // Top margin 5% of total height
-              ),
-              child: Text(
-                currentQuestion.text,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            // best practise way to display the answers
-            ...currentQuestion
-                .getShuffledAnswers()
-                .map((answer) => Container(
-                      width: MediaQuery.of(context).size.width * .8,
-                      child: AnswerButton(
-                        answerText: answer,
-                        onTap: () {
-                          nextQuestion(answer);
-                        },
-                      ),
-                    ))
-                .toList(),
-          ],
-        ),
-      ),
-    ); */
